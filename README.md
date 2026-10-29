@@ -17,6 +17,7 @@ for multiple joint configurations.
 - Duplicate solution filtering using wrapped joint-angle distance.
 - Jacobian singular-value and condition-number diagnostics for every IK result.
 - Smooth cubic and quintic joint-space trajectory generation.
+- Joint-space path generation with shortest-angle IK branch selection.
 
 ## Project layout
 
@@ -31,6 +32,7 @@ for multiple joint configurations.
 │   ├── check_model.py
 │   ├── forward_kinematics.py
 │   ├── inverse_kinematics.py
+│   ├── path_planning.py
 │   ├── trajectory_planning.py
 │   ├── validate_fk.py
 │   └── view_puma560.py
@@ -196,6 +198,39 @@ trajectory = plan_waypoint_trajectory(
 The planner validates that every waypoint is inside the configured joint
 limits. The current waypoint planner stops at each waypoint, so future work
 can add velocity-continuous blending and Cartesian trajectory generation.
+
+## Path planning versus trajectory planning
+
+Path planning chooses the geometric route through configuration space. It
+answers *which configurations should the robot pass through?* Trajectory
+planning then assigns time to that route and produces velocity and
+acceleration commands.
+
+The current path layer in [path_planning.py](src/path_planning.py) provides:
+
+- Shortest-angle joint-space paths.
+- Joint-limit validation.
+- IK branch selection based on distance from the current configuration.
+- Singularity filtering using the smallest Jacobian singular value.
+
+Use the layers explicitly:
+
+```python
+from src.inverse_kinematics import inverse_kinematics
+from src.path_planning import plan_joint_path, select_ik_solution
+from src.trajectory_planning import time_parameterize_path
+
+solutions = inverse_kinematics(target_pose, initial_guess=current_q)
+selected = select_ik_solution(solutions, current_q)
+path = plan_joint_path(current_q, selected.q)
+trajectory = time_parameterize_path(path, duration=5.0)
+```
+
+This currently plans in joint space and does not perform obstacle or
+self-collision checking. A future Cartesian planner can interpolate poses,
+run IK at each pose, select the branch closest to the previous configuration,
+and then pass the resulting joint path to the same time-parameterization
+layer.
 
 ## Mesh attribution
 

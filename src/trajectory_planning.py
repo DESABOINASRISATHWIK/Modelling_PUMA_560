@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from inverse_kinematics import DEFAULT_LIMITS
+from path_planning import JointPath
 
 
 @dataclass(frozen=True)
@@ -143,17 +144,18 @@ def plan_waypoint_trajectory(
     if num_samples < waypoints.shape[0]:
         raise ValueError("num_samples must cover all waypoint segments")
 
-    samples_per_segment = [
-        max(2, int(round(
-            num_samples * duration / np.sum(durations)
-        )))
-        for duration in durations
-    ]
-    samples_per_segment[-1] += (
-        num_samples - sum(samples_per_segment)
-    )
-    if samples_per_segment[-1] < 2:
-        raise ValueError("num_samples is too small for the requested segments")
+    segment_count = len(durations)
+    samples_per_segment = [2] * segment_count
+    extra_samples = num_samples - (segment_count + 1)
+    if extra_samples > 0:
+        proportions = durations / np.sum(durations)
+        additions = np.floor(extra_samples * proportions).astype(int)
+        samples_per_segment = [
+            count + int(addition)
+            for count, addition in zip(samples_per_segment, additions)
+        ]
+        remainder = extra_samples - int(np.sum(additions))
+        samples_per_segment[-1] += remainder
 
     all_time: list[np.ndarray] = []
     all_position: list[np.ndarray] = []
@@ -184,6 +186,23 @@ def plan_waypoint_trajectory(
         position=np.vstack(all_position),
         velocity=np.vstack(all_velocity),
         acceleration=np.vstack(all_acceleration),
+    )
+
+
+def time_parameterize_path(
+    path: JointPath,
+    duration: float,
+    *,
+    method: str = "quintic",
+    joint_limits: np.ndarray | None = None,
+) -> JointTrajectory:
+    """Assign time to a geometric path using the smooth waypoint planner."""
+    return plan_waypoint_trajectory(
+        path.position,
+        np.full(path.position.shape[0] - 1, duration / (path.position.shape[0] - 1)),
+        num_samples=path.position.shape[0],
+        method=method,
+        joint_limits=joint_limits,
     )
 
 
