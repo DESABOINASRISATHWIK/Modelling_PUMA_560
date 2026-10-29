@@ -16,6 +16,7 @@ for multiple joint configurations.
 - Multiple IK solutions found by deterministic multi-start optimization.
 - Duplicate solution filtering using wrapped joint-angle distance.
 - Jacobian singular-value and condition-number diagnostics for every IK result.
+- Smooth cubic and quintic joint-space trajectory generation.
 
 ## Project layout
 
@@ -30,6 +31,7 @@ for multiple joint configurations.
 │   ├── check_model.py
 │   ├── forward_kinematics.py
 │   ├── inverse_kinematics.py
+│   ├── trajectory_planning.py
 │   ├── validate_fk.py
 │   └── view_puma560.py
 └── mujoco_test.py
@@ -144,6 +146,56 @@ or has been found. At singularities, the smallest Jacobian singular value
 approaches zero and the condition number becomes large. Solutions should
 therefore be checked for both pose error and singularity metrics before being
 used for motion planning.
+
+## Joint-space trajectory planning
+
+The first trajectory-planning layer generates smooth point-to-point or
+multi-waypoint joint trajectories. It returns sampled position, velocity, and
+acceleration arrays:
+
+```python
+import numpy as np
+
+from src.trajectory_planning import plan_joint_trajectory
+
+start = np.zeros(6)
+goal = np.array([0.4, -0.5, 0.6, 0.3, -0.4, 0.2])
+
+trajectory = plan_joint_trajectory(
+    start,
+    goal,
+    duration=5.0,
+    num_samples=201,
+    method="quintic",
+)
+
+print(trajectory.time)
+print(trajectory.position)
+print(trajectory.velocity)
+print(trajectory.acceleration)
+```
+
+Use `method="cubic"` for zero endpoint velocity, or the default
+`method="quintic"` for zero endpoint velocity and acceleration. Multiple
+segments can be generated with `plan_waypoint_trajectory()`:
+
+```python
+from src.trajectory_planning import plan_waypoint_trajectory
+
+waypoints = np.array([
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.3, -0.2, 0.4, 0.1, 0.0, 0.2],
+    [0.5, -0.4, 0.6, 0.2, -0.2, 0.3],
+])
+trajectory = plan_waypoint_trajectory(
+    waypoints,
+    durations=[2.0, 3.0],
+)
+```
+
+The planner validates that every waypoint is inside the configured joint
+limits. The current waypoint planner stops at each waypoint, so future work
+can add velocity-continuous blending and Cartesian trajectory generation.
 
 ## Mesh attribution
 
