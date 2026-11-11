@@ -1,0 +1,12 @@
+{
+    "workbench.colorTheme": "Dark Modern",
+    "editor.minimap.enabled": false,
+    "breadcrumbs.enabled": false,
+    "editor.semanticHighlighting.enabled": true,
+    "editor.renderWhitespace": "selection",
+    "editor.smoothScrolling": true,
+    "editor.stickyScroll.enabled": false,
+    "workbench.editor.enablePreview": false,
+    "workbench.activityBar.location": "top",
+    "workbench.statusBar.visible": true
+}

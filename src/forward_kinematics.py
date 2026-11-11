@@ -1,138 +1,79 @@
+"""
+Forward kinematics of the PUMA-560 from its DH table (NumPy only).
 
-import argparse
-from pathlib import Path
+Derivation (standard DH, see dh_model.py)
+-----------------------------------------
+    T_0E(q) = T_base  A_1(q1) A_2(q2) A_3(q3) A_4(q4) A_5(q5) A_6(q6)  T_6E
 
-import mujoco
-import mujoco.viewer
+with A_i = Rz(q_i + off_i) Tz(d_i) Tx(a_i) Rx(alpha_i).  Because the DH table of
+this robot has a_4 = a_5 = a_6 = d_5 = d_6 = 0, the origins of frames {4},{5},{6}
+coincide: the wrist centre
+
+    p_w = p_3 + d_4 z_3 ,     p_3 = p_2 + d_3 z_2 + a_3 x_3 ,
+    p_2 = p_1 + a_2 x_2 ,     p_1 = (0, 0, d_1)
+
+depends on q1, q2, q3 only.  The last three joints only orient the tool
+(R_36 = Rz(q4) Ry(-q5) Rz(q6)); this decoupling is what the closed-form IK uses.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 import numpy as np
 
-
-def rot_x(theta):
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array([
-        [1, 0, 0, 0],
-        [0, c, -s, 0],
-        [0, s, c, 0],
-        [0, 0, 0, 1],
-    ], dtype=float)
+from .dh_model import PUMA560, DHModel
 
 
-def rot_y(theta):
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array([
-        [c, 0, s, 0],
-        [0, 1, 0, 0],
-        [-s, 0, c, 0],
-        [0, 0, 0, 1],
-    ], dtype=float)
+@dataclass
+class FKResult:
+    T: np.ndarray                    # 4x4 end-effector (flange) pose in the base frame
+    position: np.ndarray             # (3,)  end-effector position  [m]
+    rotation: np.ndarray             # (3,3) end-effector orientation
+    frames: list                     # [T_00, T_01, ..., T_06]  absolute frames
+    link_transforms: list            # [A_1, ..., A_6]          relative DH transforms
+    wrist_center: np.ndarray         # (3,)  common origin of frames {4},{5},{6}
 
 
-def rot_z(theta):
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array([
-        [c, -s, 0, 0],
-        [s, c, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-    ], dtype=float)
+def forward_kinematics(q, model: DHModel = PUMA560) -> FKResult:
+    """Pose of the tool flange for the joint vector ``q`` (6 angles, radians).
 
-
-def translate(x=0.0, y=0.0, z=0.0):
-    T = np.eye(4)
-    T[:3, 3] = [x, y, z]
-    return T
-
-
-def forward_kinematics(q):
+    Works for any finite q (joint limits are *not* enforced here; use
+    ``joint_limit_violation`` for that).
     """
-    Forward kinematics for the PUMA 560 mesh model.
-
-    q: six joint angles in radians.
-    Returns: 4x4 end-effector transformation matrix.
-    """
-    if len(q) != 6:
-        raise ValueError("Expected exactly six joint angles")
-
-    q1, q2, q3, q4, q5, q6 = q
-
-    T = np.eye(4)
-    T = (
-        T
-        @ translate(z=0.01)
-        @ translate(z=0.6718)
-        @ rot_x(np.pi / 2)
-        @ rot_y(q1)
-        @ rot_z(q2)
-        @ translate(x=0.4318, y=-0.0203, z=0.1501)
-        @ rot_z(-np.pi / 2)
-        @ rot_z(q3)
-        @ rot_x(np.pi / 2)
-        @ rot_z(np.pi / 2)
-        @ rot_z(q4)
-        @ translate(z=0.4331)
-        @ rot_x(np.pi / 2)
-        @ rot_z(q5)
-        @ translate(y=0.0558)
-        @ rot_x(-np.pi / 2)
-        @ rot_z(q6)
-    )
-
-    return T
+    q = model.check_q(q)
+    A = model.link_transforms(q)
+    frames = [model.T_base.copy()]
+    T = model.T_base.copy()
+    for Ai in A:
+        T = T @ Ai
+        frames.append(T.copy())
+    T_E = T @ model.T_tool
+    return FKResult(T=T_E, position=T_E[:3, 3].copy(), rotation=T_E[:3, :3].copy(),
+                    frames=frames, link_transforms=A, wrist_center=frames[4][:3, 3].copy())
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Calculate PUMA 560 forward kinematics."
-    )
-    parser.add_argument(
-        "joint_angles",
-        nargs="*",
-        type=float,
-        metavar="q",
-        help="six joint angles in radians",
-    )
-    args = parser.parse_args()
-    if args.joint_angles:
-        if len(args.joint_angles) != 6:
-            parser.error("provide exactly six joint angles")
-        q = np.asarray(args.joint_angles, dtype=float)
-    else:
-        try:
-            q = np.asarray(
-                [
-                    float(input(f"Enter joint angle q{i} (radians): "))
-                    for i in range(1, 7)
-                ],
-                dtype=float,
-            )
-        except ValueError as exc:
-            parser.error(f"joint angles must be numeric: {exc}")
+def end_effector_pose(q, model: DHModel = PUMA560) -> np.ndarray:
+    """Convenience: just the 4x4 flange pose."""
+    return forward_kinematics(q, model).T
 
-    T = forward_kinematics(q)
 
-    print("Transformation matrix:")
-    print(T)
-    print("\nEnd-effector position (m):")
-    print(T[:3, 3])
-    print("\nEnd-effector orientation:")
-    print(T[:3, :3])
+def wrist_center(q, model: DHModel = PUMA560) -> np.ndarray:
+    return forward_kinematics(q, model).wrist_center
 
-    project_dir = Path(__file__).resolve().parent.parent
-    model_path = project_dir / "models" / "puma560.xml"
-    model = mujoco.MjModel.from_xml_path(str(model_path))
-    data = mujoco.MjData(model)
 
-    for i in range(6):
-        joint_id = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_JOINT, f"joint{i + 1}"
-        )
-        data.qpos[model.jnt_qposadr[joint_id]] = q[i]
-        data.ctrl[i] = q[i]
+def joint_limit_violation(q, model: DHModel = PUMA560) -> np.ndarray:
+    """Per-joint amount [rad] by which q is outside its limits (0 if inside)."""
+    q = model.check_q(q)
+    return np.maximum(model.limits[:, 0] - q, 0.0) + np.maximum(q - model.limits[:, 1], 0.0)
 
-    mujoco.mj_forward(model, data)
-    print("\nMuJoCo viewer started. Close the viewer window to exit.")
 
-    with mujoco.viewer.launch_passive(model, data) as viewer:
-        while viewer.is_running():
-            mujoco.mj_step(model, data)
-            viewer.sync()
+def within_limits(q, model: DHModel = PUMA560, tol: float = 1e-9) -> bool:
+    return bool(np.all(joint_limit_violation(q, model) <= tol))
+
+
+def random_valid_configuration(rng: np.random.Generator, model: DHModel = PUMA560,
+                               margin: float = 0.0) -> np.ndarray:
+    """Uniform random joint vector inside the joint limits (shrunk by ``margin``)."""
+    lo, hi = model.limits[:, 0] + margin, model.limits[:, 1] - margin
+    return rng.uniform(lo, hi)

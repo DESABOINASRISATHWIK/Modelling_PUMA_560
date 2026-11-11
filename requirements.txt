@@ -1,0 +1,6 @@
+numpy>=1.24
+mujoco>=3.0        # model rendering, reference FK, interactive viewer (pulls in glfw / pyopengl)
+matplotlib>=3.7    # figures
+Pillow>=9.0        # offscreen MuJoCo snapshots -> PNG
+pytest>=7.0        # tests
+# SciPy is NOT required: no algorithm of this project uses it.

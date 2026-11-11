@@ -1,0 +1,80 @@
+<mujoco model="puma560">
+  <compiler angle="radian" meshdir="meshes" inertiafromgeom="false" autolimits="false" />
+  <option gravity="0.0 0.0 -9.81" timestep="0.002" integrator="implicitfast" />
+  <visual>
+    <headlight ambient="0.3 0.3 0.3" diffuse="0.65 0.65 0.65" specular="0.25 0.25 0.25" />
+    <global azimuth="135" elevation="-20" offwidth="1920" offheight="1080" />
+    <quality shadowsize="4096" offsamples="4" />
+  </visual>
+  <asset>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.22 0.27 0.34" rgb2="0.055 0.075 0.11" width="512" height="512" />
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.25 0.28 0.32" rgb2="0.23 0.26 0.30" width="300" height="300" />
+    <material name="floor_mat" texture="floor_tex" texrepeat="4 4" reflectance="0.12" />
+    <mesh name="link0" file="link0.stl" />
+    <mesh name="link1" file="link1.stl" />
+    <mesh name="link2" file="link2.stl" />
+    <mesh name="link3" file="link3.stl" />
+    <mesh name="link4" file="link4.stl" />
+    <mesh name="link5" file="link5.stl" />
+    <mesh name="link6" file="link6.stl" />
+  </asset>
+  <worldbody>
+    <light pos="1.5 -1.5 3.0" dir="-0.4 0.4 -1" diffuse="0.7 0.7 0.7" castshadow="true" />
+    <geom name="floor" type="plane" size="3 3 0.05" material="floor_mat" contype="1" conaffinity="1" />
+    <geom name="base_mesh" type="mesh" mesh="link0" rgba="0.16 0.20 0.25 1" contype="0" conaffinity="0" />
+    <body name="link1" pos="0 0 0">
+      <joint name="joint1" type="hinge" pos="0 0 0" axis="0 0 1" range="-2.7925268 2.7925268" limited="true" damping="1.0" />
+      <inertial pos="0 0 0.67183" mass="0.001" fullinertia="0.18 0.18 0.35 0 0 0" />
+      <geom name="mesh1" type="mesh" mesh="link1" pos="0 0 0.67183" quat="0.707106781 0.707106781 0 0" rgba="0.94 0.36 0.075 1" contype="0" conaffinity="0" />
+      <body name="link2" pos="0 0 0.67183">
+        <joint name="joint2" type="hinge" pos="0 0 0" axis="0 -1 0" range="-0.785398163 3.92699082" limited="true" damping="1.0" />
+        <inertial pos="0.068 -0.2275 0.006" mass="17.4" fullinertia="0.13 0.539 0.524 0 0 -9.18485099e-19" />
+        <geom name="mesh2" type="mesh" mesh="link2" pos="0.4318 0 0" quat="0.707106781 0.707106781 0 0" rgba="0.78 0.82 0.86 1" contype="0" conaffinity="0" />
+        <body name="link3" pos="0.4318 0 0">
+          <joint name="joint3" type="hinge" pos="0 0 0" axis="0 -1 0" range="-3.92699082 0.785398163" limited="true" damping="1.0" />
+          <inertial pos="0 -0.16415 0.07" mass="4.8" fullinertia="0.066 0.086 0.0201 0 0 0" />
+          <geom name="mesh3" type="mesh" mesh="link3" pos="0.0203 -0.15005 0" quat="1 0 0 0" rgba="0.94 0.36 0.075 1" contype="0" conaffinity="0" />
+          <body name="link4" pos="0.0203 -0.15005 0">
+            <joint name="joint4" type="hinge" pos="0 0 0" axis="0 0 1" range="-1.91986218 2.96705973" limited="true" damping="1.0" />
+            <inertial pos="0 0 0.4508" mass="0.82" fullinertia="0.0018 0.0018 0.0013 0 0 -3.061617e-20" />
+            <geom name="mesh4" type="mesh" mesh="link4" pos="0 0 0.4318" quat="0.707106781 0.707106781 0 0" rgba="0.78 0.82 0.86 1" contype="0" conaffinity="0" />
+            <body name="link5" pos="0 0 0.4318">
+              <joint name="joint5" type="hinge" pos="0 0 0" axis="0 -1 0" range="-1.74532925 1.74532925" limited="true" damping="1.0" />
+              <inertial pos="0 0 0" mass="0.34" fullinertia="0.0003 0.0004 0.0003 0 0 0" />
+              <geom name="mesh5" type="mesh" mesh="link5" pos="0 0 0" quat="1 0 0 0" rgba="0.94 0.36 0.075 1" contype="0" conaffinity="0" />
+              <body name="link6" pos="0 0 0">
+                <joint name="joint6" type="hinge" pos="0 0 0" axis="0 0 1" range="-4.64257581 4.64257581" limited="true" damping="1.0" />
+                <inertial pos="0 0 0.032" mass="0.09" fullinertia="0.00015 0.00015 4e-05 0 0 0" />
+                <geom name="mesh6" type="mesh" mesh="link6" pos="0 0 0" quat="1 0 0 0" rgba="0.12 0.15 0.19 1" contype="0" conaffinity="0" />
+                <site name="wrist_center_site" pos="0 0 0" size="0.012" rgba="1 0 1 0" />
+                <site name="ee_site" pos="0 0 0.04" size="0.012" rgba="1 1 0 0" />
+                <geom name="collision_link6" contype="1" conaffinity="1" rgba="0.2 0.8 0.3 0.15" group="3" type="sphere" pos="0 0 0.04" size="0.018" />
+              </body>
+              <geom name="collision_link5" contype="1" conaffinity="1" rgba="0.2 0.8 0.3 0.15" group="3" type="sphere" pos="0 0 0" size="0.025" />
+            </body>
+            <geom name="collision_link4" contype="1" conaffinity="1" rgba="0.2 0.8 0.3 0.15" group="3" type="capsule" fromto="0 0 0.06 0 0 0.36" size="0.04" />
+          </body>
+          <geom name="collision_link3" contype="1" conaffinity="1" rgba="0.2 0.8 0.3 0.15" group="3" type="capsule" fromto="0 -0.06 0 0.02 -0.15 0" size="0.045" />
+        </body>
+        <geom name="collision_link2" contype="1" conaffinity="1" rgba="0.2 0.8 0.3 0.15" group="3" type="capsule" fromto="0.09 -0.15 0 0.37 -0.15 0" size="0.055" />
+      </body>
+      <geom name="collision_link1" contype="1" conaffinity="1" rgba="0.2 0.8 0.3 0.15" group="3" type="capsule" fromto="0 0 0.18 0 0 0.55" size="0.08" />
+    </body>
+    <geom name="base_collision" type="cylinder" size="0.12 0.035" pos="0 0 0.035" rgba="0.2 0.2 0.2 1" />
+  </worldbody>
+  <contact>
+    <exclude body1="link1" body2="link2" />
+    <exclude body1="link2" body2="link3" />
+    <exclude body1="link3" body2="link4" />
+    <exclude body1="link4" body2="link5" />
+    <exclude body1="link5" body2="link6" />
+  </contact>
+  <actuator>
+    <motor name="torque1" joint="joint1" gear="1.0" ctrllimited="true" ctrlrange="-150.0 150.0" forcelimited="true" forcerange="-150.0 150.0" />
+    <motor name="torque2" joint="joint2" gear="1.0" ctrllimited="true" ctrlrange="-150.0 150.0" forcelimited="true" forcerange="-150.0 150.0" />
+    <motor name="torque3" joint="joint3" gear="1.0" ctrllimited="true" ctrlrange="-100.0 100.0" forcelimited="true" forcerange="-100.0 100.0" />
+    <motor name="torque4" joint="joint4" gear="1.0" ctrllimited="true" ctrlrange="-30.0 30.0" forcelimited="true" forcerange="-30.0 30.0" />
+    <motor name="torque5" joint="joint5" gear="1.0" ctrllimited="true" ctrlrange="-20.0 20.0" forcelimited="true" forcerange="-20.0 20.0" />
+    <motor name="torque6" joint="joint6" gear="1.0" ctrllimited="true" ctrlrange="-10.0 10.0" forcelimited="true" forcerange="-10.0 10.0" />
+  </actuator>
+</mujoco>

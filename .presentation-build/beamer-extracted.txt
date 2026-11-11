@@ -1,0 +1,297 @@
+GROUP 7
+
+PUMA 560 Robot
+Manipulator
+Satyanarayana
+Sarvajith
+Sathwik
+Sreyas
+
+Project scope
+PUMA560: A six revolute joint manipulator with a spherical wrist
+
+• Robot speciﬁcation and standard DH frames
+• Forward and analytical inverse kinematics
+• Velocity kinematics and singularity analysis
+• Independent checks against MuJoCo
+
+GROUP 7
+
+PUMA 560
+
+2
+
+Robot geometry and reference frames
+
+O0 : mounting plane
+O1 : 0.67183 m above O0
+O4 = O5 = O6 : wrist centre
+OE : 0.04 m along z6 from the wrist
+centre
+
+GROUP 7
+
+PUMA 560
+
+3
+
+Standard Denavit–Hartenberg model
+Ai = Rz (qi ) Tz (di ) Tx (ai ) Rx (αi )
+Joint
+
+θ
+
+d (m)
+
+a (m)
+
+α (deg)
+
+1
+2
+3
+4
+5
+6
+
+q1
+q2
+q3
+q4
+q5
+q6
+
+0.67183
+0
+0.15005
+0.4318
+0
+0
+
+0
+0.4318
+0.0203
+0
+0
+0
+
+90
+0
+-90
+90
+-90
+0
+
+Flange transform: T6E = Trans(z, 0.04 m)
+
+GROUP 7
+
+PUMA 560
+
+4
+
+Forward kinematics
+
+T0E = A1 A2 A3 A4 A5 A6 T6E
+Input: six joint angles
+Output: end-eﬀector pose, all DH
+frames and wrist centre
+The MuJoCo pose provides an
+independent comparison
+
+GROUP 7
+
+PUMA 560
+
+5
+
+Reachability and joint limits
+r ≥ |d3 | = 0.15005 m
+|a2 − L| ≤ ρ ≤ a2 + L
+√
+L = a32 + d42
+Outer planar reach: 0.8641 m
+Joint
+
+Min (◦ )
+
+Max (◦ )
+
+J1
+J2
+J3
+J4
+J5
+J6
+
+-160
+-45
+-225
+-110
+-100
+-266
+
+160
+225
+45
+170
+100
+266
+
+A reachable target can still violate every joint-limit branch
+
+GROUP 7
+
+PUMA 560
+
+6
+
+Velocity kinematics
+[ ]
+
+v
+= J(q)q̇
+ω
+
+Jv ,i = zi−1 × (pE − pi−1 )
+Jω,i = zi−1
+Inverse velocity: pseudoinverse or
+damped least squares
+
+GROUP 7
+
+PUMA 560
+
+7
+
+Singularity conditions
+(
+
+)
+
+det J = a2 X a3 sin q3 + d4 cos q3 sin q5
+Shoulder: X = 0
+Wrist centre reaches the cylinder about the waist axis
+Elbow: a3 sin q3 + d4 cos q3 = 0
+Stretched conﬁguration within limits: q3 ≈ −87.3◦
+Wrist: sin q5 = 0
+Joint 4 and joint 6 axes align. Within limits: q5 = 0◦
+
+GROUP 7
+
+PUMA 560
+
+8
+
+Singular conﬁgurations
+
+The Jacobian loses rank and at least one twist direction becomes unavailable
+
+GROUP 7
+
+PUMA 560
+
+9
+
+Near-singular joint speeds
+For the weakest twist:
+∥q̇∥ =
+
+∥twist∥
+σmin
+
+At q5 = 0.0001 rad:
+Pseudoinverse: about 37,500 rad/s
+Damping bounds joint speed at the
+cost of task error
+
+GROUP 7
+
+PUMA 560
+
+10
+
+Interactive MuJoCo demonstration
+
+• Joint-angle or Cartesian input
+• DH frames and IK branch
+
+overlays
+• Velocity ellipsoid and arrows
+• Singularity indicator
+
+GROUP 7
+
+PUMA 560
+
+11
+
+Numerical veriﬁcation results
+Check
+
+Sample size
+
+Reported result
+
+FK vs MuJoCo
+
+2,000 poses
+
+Max position error 6.8 × 10−16 m
+
+IK round trip
+
+3,000 poses
+
+3,000 / 3,000 recovered
+
+Jacobian vs diﬀerences
+
+1,000 poses
+
+Max absolute error 2.6 × 10−10
+
+Determinant formula
+
+Report check
+
+Max diﬀerence 1.2 × 10−16
+
+Boundary, unreachable and singular targets also have dedicated checks
+
+GROUP 7
+
+PUMA 560
+
+12
+
+Conclusions and limitations
+
+• DH forward kinematics agrees with the MuJoCo reference
+
+• The Jacobian explains lost motion and large joint speeds
+
+• Future work: dynamics, control and obstacle avoidance
+
+GROUP 7
+
+PUMA 560
+
+13
+
+References and project sources
+Project implementation and veriﬁcation
+README.md, src/, run_all.py
+results/verification_report.md
+Robot parameters
+Corke and Armstrong-Helouvry (1994)
+Armstrong, Khatib and Burdick (1986)
+ARTE and rtb-data: models/LICENSE_NOTICE.md
+
+GROUP 7
+
+PUMA 560
+
+14
+
+
