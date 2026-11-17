@@ -15,7 +15,7 @@ from src.forward_kinematics import forward_kinematics
 from src.inverse_kinematics import inverse_kinematics
 from src.jacobian import geometric_jacobian
 from src.singularity_analysis import analyze_configuration
-from src.velocity_kinematics import twist_from_joint_rates
+from src.jacobian import end_effector_twist
 
 
 np.set_printoptions(precision=4, suppress=True)
@@ -45,7 +45,7 @@ print("J(q) =\n", J)
 print("[linear velocity; angular velocity] = J(q) qdot")
 qdot = np.radians([10, -5, 8, 12, -6, 4])
 print("example qdot [deg/s] =", np.degrees(qdot).round(2))
-print("resulting twist [m/s; rad/s] =", twist_from_joint_rates(q, qdot))
+print("resulting twist [m/s; rad/s] =", end_effector_twist(q, qdot))
 report = analyze_configuration(q)
 print(report.text())
 print("singularity factors =", report.factors)

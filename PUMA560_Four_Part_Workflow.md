@@ -245,11 +245,11 @@ Agree on these contracts before implementation. Names are suggestions, not exist
 ## Final group checklist
 
 - [x] FK, IK, velocity kinematics, and kinematic validation completed.
-- [ ] Dynamic simulation uses explicit, documented model parameters.
-- [ ] Core planning, trajectory, and feedback algorithms are implemented by the team using basic Python/NumPy.
-- [ ] MuJoCo is used for permitted physics, visualization, collision checking, and verification.
-- [ ] Controller gains and tuning are justified.
-- [ ] At least three experiments, including a challenging condition, are complete.
-- [ ] At least one quantitative comparative study is complete.
+- [x] Dynamic simulation uses explicit, documented model parameters.
+- [x] Core planning, trajectory, and feedback algorithms are implemented using basic Python/NumPy (verify every member can explain them).
+- [x] MuJoCo is used for permitted physics, visualization, collision checking, and verification.
+- [x] Controller gains and tuning are justified (`tools/tune_gains.py`, `docs/METHODS.md`).
+- [x] At least three experiments, including a challenging condition, are complete.
+- [x] At least one quantitative comparative study is complete.
 - [ ] Report, source, instructions, plots, numerical results, and live demo are ready.
 - [ ] Every member can explain and modify the complete implementation.

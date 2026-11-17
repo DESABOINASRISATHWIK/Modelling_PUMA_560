@@ -1,6 +1,37 @@
-# PUMA-560: kinematics and MuJoCo physics
+# PUMA-560: kinematics, planning, trajectory generation, control and MuJoCo simulation
 
-**Part 1 physics is implemented.** See [PART1.md](PART1.md) for the torque-driven
+## Project status (all course requirements)
+
+| Requirement | Where | Status |
+|---|---|---|
+| Forward / velocity / inverse kinematics (NumPy) | `src/forward_kinematics.py`, `jacobian.py`, `inverse_kinematics.py` | done, verified against MuJoCo |
+| Dynamic simulation (MuJoCo torque-driven) | `src/physics.py`, `scene.py`, `collision.py` | done (`PART1.md`) |
+| Path planning (NumPy): direct, RRT, RRT-Connect + shortcut | `src/path_planning.py`, `src/tasks.py` | done |
+| Trajectory generation (NumPy): quintic, limit-based timing | `src/trajectory.py` | done |
+| Feedback control (NumPy): PD, PD + gravity compensation | `src/control.py`, `src/gravity.py` | done, gains justified by `tools/tune_gains.py` |
+| >= 3 experiments incl. challenging cases | `run_experiments.py` (nominal, obstacle, payload) | done |
+| Quantitative comparative study | PD vs PD+G, RRT vs RRT-Connect, gain sweep | done |
+| Methods, assumptions, results | `docs/METHODS.md`, `results/experiments/summary.md` | done (written report still to be authored by the group) |
+| Live demo with selectable cases | `run_demo.py` | done (window mode not tested on a real display) |
+
+## Run the control / planning part
+
+```bash
+pip install -r requirements.txt
+python -m pytest tests -q                 # 83 tests
+python tools/tune_gains.py                # gain design + sweep  -> results/tuning/
+python run_experiments.py                 # raw logs             -> results/experiments/
+python analyse_results.py                 # tables + figures     -> results/figures/, results/experiments/summary.md
+python run_demo.py --case obstacle --controller pd_gravity          # live viewer
+python run_demo.py --case obstacle --controller pd --gif out.gif    # headless (MUJOCO_GL=egl)
+python examples/planning_demo.py          # goal selection + planning printout
+```
+
+Everything below this line is the original kinematics documentation (still valid).
+
+---
+
+**Physics is implemented.** See [PART1.md](PART1.md) for the torque-driven
 `PhysicsSimulation` API, scene/payload configuration, collision checking, gravity
 derivation, model assumptions and validation. Run `python examples/physics_demo.py`
 for a headless PD + gravity demonstration. The original viewer remains available.
@@ -25,7 +56,7 @@ src/simulation.py           interactive MuJoCo viewer + overlays + offscreen ren
 src/visualization.py        matplotlib figures
 src/verification.py         the numerical checks used by tests/ and examples/verification_report.py
 tools/build_mjcf.py         generates models/puma560.xml        models/LICENSE_NOTICE.md  provenance + licences
-tests/                      53 pytest tests                      examples/  demos + verification report
+tests/                      83 pytest tests                      examples/  demos + verification report
 results/                    figures + verification_report.{md,json} (generated)
 ```
 
@@ -33,7 +64,7 @@ results/                    figures + verification_report.{md,json} (generated)
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                      # 53 tests (about 10 s)
+python -m pytest tests -q                      # 83 tests (about 25 s)
 python examples/fk_demo.py                     # FK: tables, frames, MuJoCo cross-check, figures
 python examples/ik_demo.py                     # IK: 8 branches, unreachable, joint-limit-infeasible
 python examples/workspace_demo.py              # reachable workspace + analytic bound

@@ -1,25 +1,25 @@
 {
   "environment": {
     "python": "3.12.3",
-    "numpy": "2.4.4"
+    "numpy": "2.5.4"
   },
   "fk_vs_mujoco": {
     "n": 2000,
     "seed": 0,
     "position_error_m": {
-      "max": 6.804363002006077e-16,
-      "rms": 2.1992053206752933e-16,
-      "mean": 1.9231059179052649e-16
+      "max": 6.826968921430001e-16,
+      "rms": 2.1983320080931336e-16,
+      "mean": 1.9221585363728302e-16
     },
     "orientation_error_rad": {
-      "max": 7.397488689647034e-16,
-      "rms": 2.5813388944727564e-16,
-      "mean": 2.3465082683478656e-16
+      "max": 7.291119900042745e-16,
+      "rms": 2.5825395820867604e-16,
+      "mean": 2.347405569258047e-16
     },
     "wrist_center_error_m": {
-      "max": 6.804363002006077e-16,
-      "rms": 2.1258628368727801e-16,
-      "mean": 1.8622610953385778e-16
+      "max": 6.826968921430001e-16,
+      "rms": 2.12814828813626e-16,
+      "mean": 1.8629485652370013e-16
     }
   },
   "ik_roundtrip": {
@@ -201,45 +201,45 @@
   "velocity_kinematics": {
     "n": 500,
     "seed": 6,
-    "ellipsoid_axes_vs_eig_max_err": 5.329070518200751e-15,
+    "ellipsoid_axes_vs_eig_max_err": 4.440892098500626e-15,
     "directional_gain_bound_violation": 0.0,
-    "twist_roundtrip_max_err": 2.2234987987762863e-14,
+    "twist_roundtrip_max_err": 2.206950522108879e-14,
     "singular_shoulder": {
       "lost_direction_alignment_min": 0.9999999999999999,
-      "null_motion_residual_max": 8.182362242982006e-16
+      "null_motion_residual_max": 7.483443315117415e-16
     },
     "singular_elbow": {
-      "lost_direction_alignment_min": 0.9999999999999999,
-      "null_motion_residual_max": 5.619152930315529e-15
+      "lost_direction_alignment_min": 0.9999999999999998,
+      "null_motion_residual_max": 2.9206346630975923e-15
     },
     "singular_wrist": {
       "lost_direction_alignment_min": 0.9999999999999997,
-      "null_motion_residual_max": 1.8750590074071944e-15
+      "null_motion_residual_max": 1.7570973793172917e-15
     },
     "joint_speed_weakest_twist": [
       {
         "q5": 0.1,
-        "sigma_min": 0.026254103359493165,
+        "sigma_min": 0.02625410335949315,
         "pinv_speed": 38.08928403713369,
-        "dls_speed": 8.231989756609284
+        "dls_speed": 8.231989756609288
       },
       {
         "q5": 0.01,
-        "sigma_min": 0.0026699119245770344,
-        "pinv_speed": 374.54419031385083,
-        "dls_speed": 1.0649282633329444
+        "sigma_min": 0.0026699119245769854,
+        "pinv_speed": 374.5441903138574,
+        "dls_speed": 1.0649282633329462
       },
       {
         "q5": 0.001,
-        "sigma_min": 0.0002666502627525692,
-        "pinv_speed": 3750.230694233076,
-        "dls_speed": 0.10665707167308362
+        "sigma_min": 0.0002666502627523784,
+        "pinv_speed": 3750.230694235762,
+        "dls_speed": 0.10665707167308298
       },
       {
         "q5": 0.0001,
-        "sigma_min": 2.666085715985731e-05,
-        "pinv_speed": 37508.17139914311,
-        "dls_speed": 0.010664339831840182
+        "sigma_min": 2.6660857159767846e-05,
+        "pinv_speed": 37508.17139926898,
+        "dls_speed": 0.010664339831843147
       }
     ],
     "dls_bound_1_over_2lambda": 10.0
@@ -247,41 +247,41 @@
   "singularity_examples": {
     "regular": {
       "status": "regular",
-      "sigma_min": 0.08768896680302743,
+      "sigma_min": 0.08768896680302737,
       "rank": 6,
-      "condition_number": 21.58779791407738,
+      "condition_number": 21.587797914077388,
       "active": []
     },
     "near_singular(q5=0.02)": {
       "status": "near-singular",
-      "sigma_min": 0.0053441202733598165,
+      "sigma_min": 0.005344120273359788,
       "rank": 6,
-      "condition_number": 353.6308916424516,
+      "condition_number": 353.63089164245343,
       "active": []
     },
     "singular_shoulder": {
       "status": "singular",
-      "sigma_min": 1.6106203055639452e-16,
+      "sigma_min": 5.007484358027749e-17,
       "rank": 5,
-      "condition_number": 1.1754423590472574e+16,
+      "condition_number": 3.780723405488883e+16,
       "active": [
         "shoulder"
       ]
     },
     "singular_elbow": {
       "status": "singular",
-      "sigma_min": 1.3291881582426169e-18,
+      "sigma_min": 1.2036807725213884e-16,
       "rank": 5,
-      "condition_number": 1.436150282093448e+18,
+      "condition_number": 1.5858971846968548e+16,
       "active": [
         "elbow"
       ]
     },
     "singular_wrist": {
       "status": "singular",
-      "sigma_min": 4.400627671783668e-17,
+      "sigma_min": 3.191288740841766e-17,
       "rank": 5,
-      "condition_number": 4.295846785753092e+16,
+      "condition_number": 5.923758009481011e+16,
       "active": [
         "wrist"
       ]

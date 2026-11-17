@@ -50,3 +50,18 @@ class PhysicsSimulation:
 
     def end_effector_pose(self):
         return site_pose(self.model, self.data)
+
+    # ------------------------------------------------------------------ execution-time queries
+    def contacts(self):
+        """Geom-name pairs touching or penetrating in the LIVE state (execution check).
+
+        Adjacent-link and payload-mount contacts are already excluded by the scene's
+        ``<contact><exclude>`` entries, so every pair returned here is a real event:
+        floor, obstacle, or self-collision between non-adjacent links.
+        """
+        names = lambda g: mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_GEOM, int(g)) or f"geom_{int(g)}"
+        return [(names(c.geom1), names(c.geom2)) for c in self.data.contact[:self.data.ncon] if c.dist <= 0.0]
+
+    def apply_disturbance(self, torque):
+        """External joint torque [N m] (not limited, not part of the controller); 0 clears it."""
+        self.data.qfrc_applied[self.vadr] = vector(torque, 6, "disturbance")

@@ -1,0 +1,111 @@
+{
+  "name": "nominal",
+  "description": "Free-space motion, nominal model, moderate speed",
+  "q_start": [
+    -0.6,
+    0.4,
+    -2.5,
+    0.0,
+    -1.0,
+    0.0
+  ],
+  "target_xyz": [
+    0.742,
+    0.3371,
+    0.807
+  ],
+  "target_rpy_deg": [
+    149.149,
+    16.722,
+    174.094
+  ],
+  "obstacles": [],
+  "payload": null,
+  "obstacle_margin_m": 0.03,
+  "v_max": [
+    0.8,
+    0.8,
+    0.8,
+    1.5,
+    1.5,
+    2.0
+  ],
+  "a_max": [
+    1.5,
+    1.5,
+    1.5,
+    5.0,
+    5.0,
+    8.0
+  ],
+  "hold_time_s": 2.0,
+  "goal": {
+    "q_goal": [
+      0.600059515080976,
+      0.6001180464112621,
+      -2.3001905626193384,
+      0.299972383128755,
+      -0.8999203973478347,
+      0.5000563187509985
+    ],
+    "ik_status": "ok",
+    "n_branches": 8,
+    "n_within_limits": 2,
+    "n_collision_free": 2,
+    "chosen_branch": 2,
+    "chosen_label": "right/up/noflip",
+    "joint_distance_rad": 1.3675414300605242
+  },
+  "direct_joint_path_blocked": false,
+  "plan": {
+    "summary": "[rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 11 ms, 0 iterations, seed 0",
+    "status": "success_direct",
+    "seed": 0,
+    "method": "rrt_connect",
+    "settings": {
+      "method": "rrt_connect",
+      "step_size": 0.2,
+      "edge_resolution": 0.02,
+      "goal_sample_rate": 0.1,
+      "max_iterations": 8000,
+      "shortcut_attempts": 150,
+      "timeout": 30.0,
+      "seed": 0
+    },
+    "waypoints": [
+      [
+        -0.6,
+        0.4,
+        -2.5,
+        0.0,
+        -1.0,
+        0.0
+      ],
+      [
+        0.600059515080976,
+        0.6001180464112621,
+        -2.3001905626193384,
+        0.299972383128755,
+        -0.8999203973478347,
+        0.5000563187509985
+      ]
+    ],
+    "path_length_rad": 1.3675414300605242,
+    "planning_time_s": 0.010662316999969335,
+    "iterations": 0
+  },
+  "trajectory": {
+    "duration_s": 2.8126394884710373,
+    "segment_times_s": [
+      2.8126394884710373
+    ],
+    "collision_free_true_scene": true,
+    "first_collision_time_s": null,
+    "min_obstacle_clearance_m": null
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.5.4",
+    "mujoco": "4.0.1"
+  }
+}
