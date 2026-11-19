@@ -189,7 +189,7 @@ TARGET_XYZ = (0.7420, 0.3371, 0.8070)
 TARGET_RPY_DEG = (149.149, 16.722, 174.094)
 
 # A floor-standing pillar (half extents) in the middle of the sweep: blocks the direct path.
-PILLAR = Obstacle(position=(0.76, -0.15, 0.35), size=(0.10, 0.10, 0.35))
+PILLAR = Obstacle(position=(0.75, -0.10, 0.80), size=(0.10, 0.18, 0.80))
 # 2 kg box 6 cm beyond the flange (teaching choice; PUMA 560 literature quotes a ~2.5 kg rating).
 PAYLOAD_2KG = Payload(mass=2.0, position=(0.0, 0.0, 0.06), size=(0.04, 0.04, 0.04))
 

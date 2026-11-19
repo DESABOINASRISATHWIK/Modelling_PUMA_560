@@ -17,6 +17,7 @@ from src.forward_kinematics import forward_kinematics
 from src.gravity import DHGravityModel
 from src.scene import scene_xml
 from src.tasks import obstacle_task, prepare_task
+from src.trajectory import QuinticTrajectory
 
 
 def _path_model(prepared):
@@ -47,11 +48,23 @@ def run(prepared, controller_name, headless=False):
     controller = make_controller(controller_name, gravity=DHGravityModel())
     limits = np.asarray([150, 150, 100, 30, 20, 10], dtype=float)
     rows, dt, t = [], float(model.opt.timestep), 0.0
+    forward = prepared.trajectory
+    backward = QuinticTrajectory(
+        forward.waypoints[::-1],
+        dt=forward.dt,
+        max_velocity=forward.max_velocity,
+        max_acceleration=forward.max_acceleration,
+    )
+    cycle_duration = forward.duration + backward.duration
 
     def step():
         nonlocal t
         q, qd = data.qpos[qadr].copy(), data.qvel[vadr].copy()
-        qref, qdref, _ = prepared.trajectory.evaluate(t)
+        phase = t % cycle_duration
+        if phase < forward.duration:
+            qref, qdref, _ = forward.evaluate(phase)
+        else:
+            qref, qdref, _ = backward.evaluate(phase - forward.duration)
         requested = controller.torque(q, qd, qref, qdref)
         applied = np.clip(requested, -limits, limits)
         data.ctrl[motors] = applied
@@ -68,12 +81,14 @@ def run(prepared, controller_name, headless=False):
             viewer.cam.azimuth, viewer.cam.elevation, viewer.cam.distance = 135, -20, 2.6
             viewer.cam.lookat[:] = [0.55, 0.0, 0.65]
             wall0 = time.perf_counter()
-            while viewer.is_running() and t < prepared.trajectory.duration:
-                step(); viewer.sync()
-                delay = t - (time.perf_counter() - wall0)
-                if delay > 0: time.sleep(min(delay, 0.01))
+        
             while viewer.is_running():
-                viewer.sync(); time.sleep(0.03)
+                step()
+                viewer.sync()
+        
+                delay = t - (time.perf_counter() - wall0)
+                if delay > 0:
+                    time.sleep(min(delay, 0.01))
     return {"planner": prepared.plan.method, "direct_path_blocked": prepared.direct_blocked,
             "planning_time_s": prepared.plan.planning_time, "iterations": prepared.plan.iterations,
             "path_length_rad": prepared.plan.path_length, "trajectory_duration_s": prepared.trajectory.duration,
