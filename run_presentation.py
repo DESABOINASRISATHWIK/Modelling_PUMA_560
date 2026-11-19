@@ -51,9 +51,17 @@ def _circle_args(args):
     return forwarded
 
 
+def _obstacle_args(args):
+    forwarded = ["--planner", args.planner, "--controller", args.controller,
+                 "--output", args.output or str(ROOT / "results" / "presentation" / "obstacle" / "latest.json")]
+    if args.headless:
+        forwarded.append("--headless")
+    return forwarded
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--show", required=True, choices=("conveyor", "control", "circle"),
+    parser.add_argument("--show", required=True, choices=("conveyor", "control", "circle", "obstacle"),
                         help="presentation demonstration to run")
     parser.add_argument("--headless", action="store_true", help="run without opening a MuJoCo viewer")
     parser.add_argument("--seconds", type=float, default=0.0,
@@ -64,6 +72,8 @@ def main(argv=None):
     parser.add_argument("--max-items", type=int, default=5)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--output", help="conveyor JSON output path")
+    parser.add_argument("--planner", choices=("rrt", "rrt_connect"), default="rrt_connect",
+                        help="planner for --show obstacle")
     parser.add_argument("--case", choices=("nominal", "obstacle", "payload", "fast", "comparison"), default="nominal",
                         help="case for --show control or --show circle")
     parser.add_argument("--controller", default="pd_gravity", choices=("pd", "pd_gravity", "pd_gravity_payload_aware"),
@@ -83,6 +93,11 @@ def main(argv=None):
         if args.controller == "pd_gravity_payload_aware":
             parser.error("--show circle accepts --controller pd or pd_gravity")
         return run_circle(_circle_args(args))
+    if args.show == "obstacle":
+        from run_obstacle_demo import main as run_obstacle
+        if args.controller == "pd_gravity_payload_aware":
+            parser.error("--show obstacle accepts --controller pd or pd_gravity")
+        return run_obstacle(_obstacle_args(args))
 
     from run_demo import main as run_control
     if args.case in ("fast", "comparison"):

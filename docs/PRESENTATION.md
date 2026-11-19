@@ -49,6 +49,8 @@ For the inclined-circle experiment:
    transfer releases above a rim, verifies the gravity drop, retracts
    vertically, and then returns to a work-side standby pose.
 4. **Dedicated obstacle-planning demonstration** — add a separate blocked
-   transfer scene and selectable RRT/RRT-Connect planners.
+   transfer scene and selectable RRT/RRT-Connect planners — complete. Use
+   `run_presentation.py --show obstacle --planner rrt_connect`; the red pillar
+   blocks the direct edge and the green line is the NumPy-planned detour.
 5. **Final presentation bundle** — register all three demonstrations with
    `run_presentation.py` and collect their result artifacts in one run folder.

@@ -54,6 +54,15 @@ Run the circle controller comparison without opening a viewer. This writes
 & $py run_presentation.py --show circle --case comparison --headless
 ```
 
+Static obstacle-planning demo. The red pillar blocks the direct motion; the
+green line is the planned, non-colliding end-effector route. Switch the planner
+to make the required planning comparison:
+
+```powershell
+& $py run_presentation.py --show obstacle --planner rrt_connect --controller pd_gravity
+& $py run_presentation.py --show obstacle --planner rrt --controller pd_gravity --headless
+```
+
 Run a bounded, headless conveyor check:
 
 ```powershell
