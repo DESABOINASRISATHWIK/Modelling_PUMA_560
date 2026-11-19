@@ -131,3 +131,58 @@ def check_trajectory_collision(checker, trajectory, resolution=0.02):
         if not checker.is_edge_valid(q[i], q[i + 1], resolution=resolution):
             return False, i
     return True, None
+
+
+class QuinticBoundaryTrajectory:
+    """One quintic joint segment with nonzero endpoint velocity/acceleration.
+
+    This is used for conveyor interception: the tool arrives at the item's
+    position with the item's velocity instead of stopping at contact.
+    Boundary values are six-vectors in SI joint units.
+    """
+
+    def __init__(self, q0, q1, duration, qd0=None, qd1=None, qdd0=None, qdd1=None):
+        self.q0 = self._vector(q0, "q0")
+        self.q1 = self._vector(q1, "q1")
+        self.qd0 = self._vector(np.zeros(6) if qd0 is None else qd0, "qd0")
+        self.qd1 = self._vector(np.zeros(6) if qd1 is None else qd1, "qd1")
+        self.qdd0 = self._vector(np.zeros(6) if qdd0 is None else qdd0, "qdd0")
+        self.qdd1 = self._vector(np.zeros(6) if qdd1 is None else qdd1, "qdd1")
+        if not np.isfinite(duration) or duration <= 0:
+            raise ValueError("duration must be positive and finite")
+        self.duration = float(duration)
+        T = self.duration
+        # q(t) = c0 + c1*t + ... + c5*t^5; solve the final three
+        # coefficients after applying the start boundary conditions.
+        self.coefficients = np.zeros((6, 6), dtype=float)
+        self.coefficients[0] = self.q0
+        self.coefficients[1] = self.qd0
+        self.coefficients[2] = 0.5 * self.qdd0
+        rhs = np.vstack((
+            self.q1 - self.coefficients[0] - self.coefficients[1] * T - self.coefficients[2] * T**2,
+            self.qd1 - self.coefficients[1] - 2 * self.coefficients[2] * T,
+            self.qdd1 - 2 * self.coefficients[2],
+        ))
+        matrix = np.array([
+            [T**3, T**4, T**5],
+            [3*T**2, 4*T**3, 5*T**4],
+            [6*T, 12*T**2, 20*T**3],
+        ])
+        self.coefficients[3:] = np.linalg.solve(matrix, rhs)
+
+    @staticmethod
+    def _vector(value, name):
+        arr = np.asarray(value, dtype=float)
+        if arr.shape != (6,) or not np.all(np.isfinite(arr)):
+            raise ValueError(f"{name} must contain six finite values")
+        return arr.copy()
+
+    def evaluate(self, t):
+        if not np.isfinite(t):
+            raise ValueError("time must be finite")
+        t = float(np.clip(t, 0.0, self.duration))
+        c = self.coefficients
+        q = sum(c[i] * t**i for i in range(6))
+        qd = sum(i * c[i] * t**(i - 1) for i in range(1, 6))
+        qdd = sum(i * (i - 1) * c[i] * t**(i - 2) for i in range(2, 6))
+        return q, qd, qdd

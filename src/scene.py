@@ -45,6 +45,10 @@ class SceneConfig:
     gear: tuple = (1.0,) * 6
     obstacles: tuple = ()
     payload: Payload | None = None
+    # Installation yaw applied rigidly to the complete base and kinematic tree.
+    # Task code must transform its world targets into the corresponding base
+    # frame before calling its analytical FK/IK routines.
+    base_yaw: float = 0.0
 
     @classmethod
     def obstacle_scene(cls, **kwargs):
@@ -61,10 +65,24 @@ def scene_xml(config=None):
     gear = vector(c.gear, 6, "gear")
     if np.any(damping < 0) or np.any(limits <= 0) or np.any(gear == 0):
         raise ValueError("require nonnegative damping, positive limits, nonzero gears")
+    if not np.isfinite(c.base_yaw):
+        raise ValueError("base_yaw must be finite")
     root = ET.parse(rp.MJCF_PATH).getroot()
     root.find("compiler").set("meshdir", str((rp.PROJECT_ROOT / "models/meshes").resolve()))
     root.find("option").attrib.update(timestep=str(c.timestep), gravity=fmt(gravity), integrator="implicitfast")
     world = root.find("worldbody")
+    if c.base_yaw:
+        # ``base_mesh`` is fixed visual geometry while ``link1`` is the root
+        # of the articulated tree.  Parenting both under this fixed body is a
+        # true installation rotation: no joint axes, signs, or DH numbers are
+        # individually altered.
+        mount = ET.Element("body", name="robot_mount", pos="0 0 0",
+                           euler=f"0 0 {float(c.base_yaw)}")
+        for element in (world.find("geom[@name='base_mesh']"),
+                        world.find("body[@name='link1']")):
+            world.remove(element)
+            mount.append(element)
+        world.append(mount)
     world.find("geom[@name='floor']").attrib.update(contype="1", conaffinity="1")
     # Simplified teaching proxies, independent of the render meshes and inertia.
     proxies = [
@@ -83,7 +101,10 @@ def scene_xml(config=None):
                       rgba="0.2 0.8 0.3 0.15", group="3", **proxy)
         if i < 6:
             ET.SubElement(contact, "exclude", body1=f"link{i}", body2=f"link{i+1}")
-    ET.SubElement(world, "geom", name="base_collision", type="cylinder", size="0.12 0.035",
+    base_parent = world.find("body[@name='robot_mount']")
+    if base_parent is None:
+        base_parent = world
+    ET.SubElement(base_parent, "geom", name="base_collision", type="cylinder", size="0.12 0.035",
                   pos="0 0 0.035", rgba="0.2 0.2 0.2 1")
     for i, obstacle in enumerate(c.obstacles):
         pos = vector(obstacle.position, 3, "obstacle position")

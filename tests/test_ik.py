@@ -43,7 +43,7 @@ def test_core_modules_do_not_use_scipy_or_mujoco_kinematics():
         text = f.read_text()
         assert not re.search(r"^\s*(import|from)\s+scipy", text, re.M), f"{f.name} imports scipy"
         if f.name not in ("mujoco_reference.py", "simulation.py", "mujoco_visualization.py",
-                          "scene.py", "physics.py", "gravity.py", "collision.py"):
+                          "scene.py", "physics.py", "gravity.py", "collision.py", "conveyor.py"):
             assert not re.search(r"^\s*(import|from)\s+mujoco", text, re.M), f"{f.name} imports mujoco"
 
 

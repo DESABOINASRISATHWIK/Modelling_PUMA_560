@@ -158,6 +158,28 @@ Q_ZERO = np.zeros(N_JOINTS)                                   # 'L' shape
 Q_READY = np.array([0.0, np.pi / 2, -np.pi / 2, 0.0, 0.0, 0.0])  # arm straight up
 Q_STRETCH = np.array([0.0, 0.0, -np.pi / 2, 0.0, 0.0, 0.0])      # arm out along +x
 Q_NOMINAL = np.array([0.0, np.pi / 4, -np.pi, 0.0, np.pi / 4, 0.0])
+# Conveyor task standby pose: parks the open gripper behind the work surface,
+# with a regular Jacobian and comfortable margins from the wrist singularity.
+# Keep Corke's canonical Q_READY above unchanged for kinematics examples.
+Q_TASK_HOME = np.array([-1.5, 1.0, -2.8, 0.0, 1.0, 0.0])
+
+# Conveyor-task standby, selected from the downward-tool IK branches for a
+# flange pose (0.00, 0.45, 0.70) m.  It is on the robot-facing side of the
+# front conveyor (pickup is at y=0.65 m), rather than behind the base.  It is
+# collision-free in the conveyor scene and has sigma_min about 0.244.
+Q_CONVEYOR_STANDBY_LEFT = np.array([
+    -1.91075109, 1.93097127, 0.57685242, 0.0, 0.63376896, -1.91075109,
+])
+
+# Equivalent work-side standby on the other elbow/wrist branch.  The conveyor
+# chooses this for a light/right-bin pickup so it does not change branches
+# while holding the item.
+Q_CONVEYOR_STANDBY_RIGHT = np.array([
+    1.91075109, 1.21064582, -3.62450373, 0.0, -0.72774352, 1.91075109,
+])
+
+# Backward-compatible name for the original left-bin standby.
+Q_CONVEYOR_STANDBY = Q_CONVEYOR_STANDBY_LEFT
 
 # ----------------------------------------------------------------------------
 # MuJoCo model files

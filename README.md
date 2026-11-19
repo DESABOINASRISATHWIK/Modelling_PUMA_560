@@ -27,6 +27,46 @@ python run_demo.py --case obstacle --controller pd --gif out.gif    # headless (
 python examples/planning_demo.py          # goal selection + planning printout
 ```
 
+## Presentation commands
+
+Use the course virtual environment from this project directory:
+
+```powershell
+$py = 'D:\IITH\Sem 5\AI3005 - AI Project\.venv_B\Scripts\python.exe'
+```
+
+Nominal conveyor pick-and-drop (interactive until the viewer is closed):
+
+```powershell
+& $py run_presentation.py --show conveyor
+```
+
+Inclined-circle tracking (interactive; the visible green ring repeats until the viewer is closed):
+
+```powershell
+& $py run_presentation.py --show circle --case nominal --controller pd_gravity
+```
+
+Run the circle controller comparison without opening a viewer. This writes
+`latest_pd.json` and `latest_pd_gravity.json` in `results/presentation/circle/`:
+
+```powershell
+& $py run_presentation.py --show circle --case comparison --headless
+```
+
+Run a bounded, headless conveyor check:
+
+```powershell
+& $py run_presentation.py --show conveyor --headless --seconds 60
+```
+
+For direct circle control, `--cycles 0` means repeat until the interactive
+viewer closes; a positive value runs that many periods:
+
+```powershell
+& $py run_circle_demo.py --controller pd_gravity --cycles 3
+```
+
 Everything below this line is the original kinematics documentation (still valid).
 
 ---
