@@ -1,13 +1,13 @@
 {
   "planner": "rrt_connect",
   "direct_path_blocked": true,
-  "planning_time_s": 0.09867969993501902,
-  "iterations": 16,
-  "path_length_rad": 1.7892988492343385,
-  "trajectory_duration_s": 3.251704972721771,
+  "planning_time_s": 0.21488890000000538,
+  "iterations": 130,
+  "path_length_rad": 4.681183090780184,
+  "trajectory_duration_s": 6.449976618727309,
   "collision_free_reference": true,
-  "execution_joint_error_rms_rad": 0.018526664618648266,
-  "execution_joint_error_peak_rad": 0.03168893873684984,
+  "execution_joint_error_rms_rad": 0.03541072142360035,
+  "execution_joint_error_peak_rad": 0.06967747124880543,
   "controller": {
     "name": "pd_gravity",
     "kp": [
