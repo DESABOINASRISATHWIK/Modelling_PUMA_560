@@ -589,7 +589,14 @@ class ConveyorSimulation:
                 continue
             # Carry compactness is the dominant criterion. The small standby
             # term only breaks a tie between equally good carrying branches.
-            cost = np.linalg.norm(q_release - q_lift) + 0.05 * np.linalg.norm(q_grasp - q_ref)
+            # cost = np.linalg.norm(q_release - q_lift) + 0.05 * np.linalg.norm(q_grasp - q_ref)
+            weights = np.array([1.0, 1.0, 1.0, 0.75, 0.75, 0.5])
+
+            cost = (
+            np.linalg.norm(weights * (q_grasp - q_ref))
+                + np.linalg.norm(weights * (q_lift - q_grasp))
+                + np.linalg.norm(weights * (q_release - q_lift))
+            )
             ranked.append((cost, q_grasp))
         if not ranked:
             raise RuntimeError("no pickup branch can reach the configured bin")

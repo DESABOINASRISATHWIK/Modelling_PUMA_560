@@ -1,7 +1,7 @@
 {
   "planner": "rrt_connect",
   "direct_path_blocked": true,
-  "planning_time_s": 0.09867969993501902,
+  "planning_time_s": 0.07888779998756945,
   "iterations": 16,
   "path_length_rad": 1.7892988492343385,
   "trajectory_duration_s": 3.251704972721771,
