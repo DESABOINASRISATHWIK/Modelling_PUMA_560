@@ -91,7 +91,7 @@ def scene_xml(config=None):
         dict(type="capsule", fromto="0 -0.06 0 0.02 -0.15 0", size="0.045"),
         dict(type="capsule", fromto="0 0 0.06 0 0 0.36", size="0.04"),
         dict(type="sphere", pos="0 0 0", size="0.025"),
-        dict(type="sphere", pos="0 0 0.04", size="0.018"),
+        dict(type="box", pos="0 0 0.143", size="0.05 0.025 0.10"),
     ]
     contact = ET.SubElement(root, "contact")
     for i, proxy in enumerate(proxies, 1):

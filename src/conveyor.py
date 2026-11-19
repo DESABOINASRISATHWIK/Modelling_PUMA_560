@@ -229,6 +229,11 @@ class ConveyorSimulation:
         root = ET.fromstring(scene_xml(SceneConfig(obstacles=tuple(obstacles), payload=payload,
                                                    base_yaw=self.BASE_YAW)))
         world = root.find("worldbody")
+        link6 = root.find(".//body[@name='link6']")
+        if link6 is not None:
+            claw_proxy = link6.find("./geom[@name='collision_link6']")
+        if claw_proxy is not None:
+            link6.remove(claw_proxy)
         contact = root.find("contact")
         actuator = root.find("actuator")
         # The simplified collision capsules for these two nonadjacent links
