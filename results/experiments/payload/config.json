@@ -54,10 +54,10 @@
   "goal": {
     "q_goal": [
       0.600059515080976,
-      0.6001180464112621,
-      -2.3001905626193384,
-      0.299972383128755,
-      -0.8999203973478347,
+      0.6001180464112618,
+      -2.300190562619338,
+      0.29997238312875496,
+      -0.8999203973478348,
       0.5000563187509985
     ],
     "ik_status": "ok",
@@ -70,7 +70,7 @@
   },
   "direct_joint_path_blocked": false,
   "plan": {
-    "summary": "[rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 6 ms, 0 iterations, seed 0",
+    "summary": "[rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 4 ms, 0 iterations, seed 0",
     "status": "success_direct",
     "seed": 0,
     "method": "rrt_connect",
@@ -95,15 +95,15 @@
       ],
       [
         0.600059515080976,
-        0.6001180464112621,
-        -2.3001905626193384,
-        0.299972383128755,
-        -0.8999203973478347,
+        0.6001180464112618,
+        -2.300190562619338,
+        0.29997238312875496,
+        -0.8999203973478348,
         0.5000563187509985
       ]
     ],
     "path_length_rad": 1.3675414300605242,
-    "planning_time_s": 0.005502417999991849,
+    "planning_time_s": 0.004270199999155011,
     "iterations": 0
   },
   "trajectory": {
@@ -116,8 +116,8 @@
     "min_obstacle_clearance_m": null
   },
   "environment": {
-    "python": "3.12.3",
-    "numpy": "2.5.4",
-    "mujoco": "4.0.1"
+    "python": "3.12.10",
+    "numpy": "2.5.1",
+    "mujoco": "3.17.0"
   }
 }

@@ -6,7 +6,7 @@
 Free-space motion, nominal model, moderate speed.
 
 - goal selection: 8 IK branches, 2 within limits, 2 collision-free; chosen `right/up/noflip`
-- direct joint path blocked: **False**; plan: [rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 11 ms, 0 iterations, seed 0
+- direct joint path blocked: **False**; plan: [rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 3 ms, 0 iterations, seed 0
 - trajectory: 2.81 s, collision-free against true geometry: True, planned min clearance: None
 
 | controller | RMSE rms-over-joints [rad] | max joint err [rad] | final EE pos err [mm] | final EE ori err [rad] | holds target (<5 mm, <0.02 rad) | peak torque j1..j6 [N m] | RMS torque j1..j6 [N m] | saturation [s] | collision-free |
@@ -20,13 +20,13 @@ Free-space motion, nominal model, moderate speed.
 Pillar blocks the direct joint path; RRT-Connect finds a detour.
 
 - goal selection: 8 IK branches, 2 within limits, 2 collision-free; chosen `right/up/noflip`
-- direct joint path blocked: **True**; plan: [rrt_connect] success: 3 waypoints, length 1.785 rad (raw 2.089), 117 ms, 7 iterations, seed 0
-- trajectory: 3.53 s, collision-free against true geometry: True, planned min clearance: 0.04039593654884434
+- direct joint path blocked: **True**; plan: [rrt_connect] success: 5 waypoints, length 4.122 rad (raw 6.956), 225 ms, 92 iterations, seed 0
+- trajectory: 6.93 s, collision-free against true geometry: True, planned min clearance: 0.035489618938032486
 
 | controller | RMSE rms-over-joints [rad] | max joint err [rad] | final EE pos err [mm] | final EE ori err [rad] | holds target (<5 mm, <0.02 rad) | peak torque j1..j6 [N m] | RMS torque j1..j6 [N m] | saturation [s] | collision-free |
 |---|---|---|---|---|---|---|---|---|---|
-| PD | 0.1603 | 0.7453 | 75.20 | 0.1110 | NO | 150.0, 57.9, 12.9, 7.1, 0.7, 0.8 | 84.8, 45.5, 9.3, 3.5, 0.2, 0.4 | 1.646 | NO [['collision_link5', 'obstacle_0'], ['collision_link6', 'obstacle_0']] |
-| PD + gravity (nominal model) | 0.0062 | 0.0310 | 0.00 | 0.0000 | yes | 3.7, 46.2, 9.3, 0.2, 0.2, 0.6 | 1.7, 39.6, 8.5, 0.1, 0.1, 0.3 | 0.000 | yes |
+| PD | 0.0274 | 0.0809 | 75.20 | 0.1110 | NO | 4.0, 49.1, 9.2, 0.4, 0.2, 0.8 | 1.4, 31.4, 7.2, 0.2, 0.1, 0.3 | 0.000 | yes |
+| PD + gravity (nominal model) | 0.0081 | 0.0381 | 0.00 | 0.0000 | yes | 3.9, 44.6, 9.4, 0.4, 0.3, 0.8 | 1.4, 30.1, 7.1, 0.2, 0.1, 0.3 | 0.000 | yes |
 
 
 ## Experiment: payload
@@ -34,7 +34,7 @@ Pillar blocks the direct joint path; RRT-Connect finds a detour.
 Nominal motion carrying a 2 kg payload (model mismatch for the controller).
 
 - goal selection: 8 IK branches, 2 within limits, 2 collision-free; chosen `right/up/noflip`
-- direct joint path blocked: **False**; plan: [rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 6 ms, 0 iterations, seed 0
+- direct joint path blocked: **False**; plan: [rrt_connect] success_direct: 2 waypoints, length 1.368 rad (raw 1.368), 4 ms, 0 iterations, seed 0
 - trajectory: 2.81 s, collision-free against true geometry: True, planned min clearance: None
 
 | controller | RMSE rms-over-joints [rad] | max joint err [rad] | final EE pos err [mm] | final EE ori err [rad] | holds target (<5 mm, <0.02 rad) | peak torque j1..j6 [N m] | RMS torque j1..j6 [N m] | saturation [s] | collision-free |
@@ -48,6 +48,6 @@ Nominal motion carrying a 2 kg payload (model mismatch for the controller).
 
 | planner | success | planning time median [s] (min-max) | path length median [rad] | waypoints median | iterations median |
 |---|---|---|---|---|---|
-| rrt | 16/20 | 0.218 (0.139-2.264) | 1.710 | 3 | 52 |
-| rrt_connect | 20/20 | 0.146 (0.107-0.253) | 1.519 | 3 | 9 |
+| rrt | 1/20 | 1.144 (1.144-1.144) | 6.096 | 5 | 1714 |
+| rrt_connect | 20/20 | 0.194 (0.121-1.064) | 4.756 | 5 | 134 |
 

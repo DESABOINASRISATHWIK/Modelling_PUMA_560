@@ -4,7 +4,7 @@
     python run_experiments.py && python analyse_results.py
 
 Reads  results/experiments/**  (raw .npz logs, config.json, planner_study.json)
-Writes results/figures/*.png, results/experiments/summary.md, results/experiments/comparison.csv
+Writes results/figures/*.png, results/experiments/summary.txt, results/experiments/comparison.csv
 Metrics are RECOMPUTED here from the raw logs, not copied from metrics.json.
 """
 import argparse
@@ -156,6 +156,41 @@ def fig_planner(study, out):
     fig.tight_layout(); fig.savefig(out / "planner_comparison.png", dpi=130); plt.close(fig)
 
 
+def fig_circle(circle_dir, out):
+    """Plot Cartesian tracking error from the reproducible circle-run JSON logs."""
+    files = {name: circle_dir / f"circle_tracking_{name}.json" for name in ("pd", "pd_gravity")}
+    available = {name: path for name, path in files.items() if path.exists()}
+    if not available:
+        return
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharex=True)
+    for name, path in available.items():
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        samples = payload.get("samples", [])
+        if not samples:
+            continue
+        time = np.asarray([row["time"] for row in samples])
+        ee = np.asarray([row["ee"] for row in samples])
+        reference = np.asarray([row["reference"] for row in samples])
+        error_mm = np.linalg.norm(ee - reference, axis=1) * 1e3
+        rmse_mm = float(payload["metrics"]["cartesian_rmse_m"]) * 1e3
+        label = f"{CONTROLLER_LABELS.get(name, name)} (RMSE {rmse_mm:.3f} mm)"
+        for axis in axes:
+            axis.plot(time, error_mm, color=COLORS.get(name), lw=1.2, label=label)
+    axes[0].set_title("full scale")
+    axes[1].set_title("zoomed tracking error")
+    axes[1].set_ylim(0, 5)
+    for axis in axes:
+        axis.set_xlabel("time [s]")
+        axis.set_ylabel("Cartesian error [mm]")
+        axis.grid(alpha=.3)
+    axes[0].legend(fontsize=8)
+    fig.suptitle("Inclined circle tracking: end-effector error")
+    fig.tight_layout()
+    fig.savefig(out / "circle_error.png", dpi=130)
+    plt.close(fig)
+
+
 def fmt_metrics_table(m_by_ctrl):
     h = ("| controller | RMSE rms-over-joints [rad] | max joint err [rad] | final EE pos err [mm] | final EE ori err [rad] | "
          "holds target (<5 mm, <0.02 rad) | peak torque j1..j6 [N m] | RMS torque j1..j6 [N m] | saturation [s] | collision-free |\n"
@@ -226,8 +261,10 @@ def main(argv=None):
     if csv_rows:
         with open(data / "comparison.csv", "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=list(csv_rows[0])); w.writeheader(); w.writerows(csv_rows)
-    (data / "summary.md").write_text("\n".join(md) + "\n", encoding="utf-8")
-    print("\n".join(md)); print(f"\nfigures -> {figs}\nsummary -> {data / 'summary.md'}")
+    fig_circle(data.parent / "circle", figs)
+    summary = data / "summary.txt"
+    summary.write_text("\n".join(md) + "\n", encoding="utf-8")
+    print("\n".join(md)); print(f"\nfigures -> {figs}\nsummary -> {summary}")
 
 
 if __name__ == "__main__":

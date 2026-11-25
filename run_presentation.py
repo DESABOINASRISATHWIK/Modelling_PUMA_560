@@ -30,7 +30,7 @@ def _conveyor_args(args):
     forwarded = ["--seconds", str(duration), "--belt-speed", str(args.belt_speed),
                  "--belt-ramp-time", str(args.belt_ramp_time), "--spawn-policy", args.spawn_policy,
                  "--max-items", str(args.max_items), "--seed", str(args.seed),
-                 "--output", args.output or str(ROOT / "results" / "presentation" / "conveyor" / "latest.json")]
+                 "--output", args.output or str(ROOT / "results" / "conveyor" / "latest.json")]
     if args.headless:
         forwarded.append("--headless")
     return forwarded
@@ -45,7 +45,7 @@ def _control_args(args):
 
 def _circle_args(args):
     forwarded = ["--case", args.case, "--controller", args.controller,
-                 "--output", args.output or str(ROOT / "results" / "presentation" / "circle" / "latest.json")]
+                 "--output", args.output or str(ROOT / "results" / "circle" / "circle_tracking.json")]
     if args.headless:
         forwarded.append("--headless")
     return forwarded
@@ -53,7 +53,7 @@ def _circle_args(args):
 
 def _obstacle_args(args):
     forwarded = ["--planner", args.planner, "--controller", args.controller,
-                 "--output", args.output or str(ROOT / "results" / "presentation" / "obstacle" / "latest.json")]
+                 "--output", args.output or str(ROOT / "results" / "obstacle" / "latest.json")]
     if args.headless:
         forwarded.append("--headless")
     return forwarded

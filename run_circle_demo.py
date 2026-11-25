@@ -30,7 +30,7 @@ def main(argv=None):
     p.add_argument("--headless", action="store_true")
     p.add_argument("--cycles", type=int, default=0,
                    help="number of circle periods; 0 loops until the interactive viewer closes (headless: 1)")
-    p.add_argument("--output", default="results/presentation/circle/latest.json")
+    p.add_argument("--output", default="results/circle/circle_tracking.json")
     a = p.parse_args(argv)
     if a.cycles < 0:
         p.error("--cycles must be non-negative")
